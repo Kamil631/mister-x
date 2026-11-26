@@ -243,9 +243,9 @@ const rid = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => 'abc
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const LS = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
 const params = new URLSearchParams(location.search);
-let me = LOCAL && params.get('p') ? 'tester' + params.get('p') : LS.get('mrx-pid');
+let me = params.get('p') ? 'tester' + params.get('p').replace(/[^a-z0-9]/gi, '').slice(0, 6) : LS.get('mrx-pid');
 if (!me) { me = rid(10); LS.set('mrx-pid', me); }
-const NKEY = LOCAL && params.get('p') ? 'mrx-name-' + me : 'mrx-name';
+const NKEY = params.get('p') ? 'mrx-name-' + me : 'mrx-name';
 let myName = LS.get(NKEY) || '';
 const b64 = u8 => btoa(String.fromCharCode(...u8)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const unb64 = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0));
@@ -325,7 +325,7 @@ function freshGame(s) {
 }
 
 /* ================= Mister X secret (only on Mister X's device) ================= */
-const KEYNAME = code => 'mrx-key-' + code + (LOCAL ? '-' + me : '');
+const KEYNAME = code => 'mrx-key-' + code + (params.get('p') ? '-' + me : '');
 let xKey = null, xKeyCode = null, priv = null, privEnc = null;
 async function getKey(create) {
   if (xKey && xKeyCode === room.code) return xKey;
@@ -969,7 +969,7 @@ requestAnimationFrame(fit);
   let h = decodeURIComponent(location.hash.slice(1));
   if (h.includes('~x~')) {
     const [code, , pid, key] = h.split('~');
-    if (code && pid && key) { LS.set('mrx-pid', pid); me = pid; LS.set('mrx-key-' + code.toUpperCase() + (LOCAL ? '-' + me : ''), key); }
+    if (code && pid && key) { LS.set('mrx-pid', pid); me = pid; LS.set('mrx-key-' + code.toUpperCase() + (params.get('p') ? '-' + me : ''), key); }
     h = code || '';
     history.replaceState(null, '', location.pathname + location.search + '#' + h);
   }
@@ -977,7 +977,7 @@ requestAnimationFrame(fit);
   if (/^[A-Za-z]{4}$/.test(h)) openRoom(h); else showHome();
 })();
 window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (/^[A-Za-z]{4}$/.test(h) && (!room || room.code !== h.toUpperCase())) openRoom(h); });
-if (LOCAL) window.__mrx = { get room() { return room; }, get priv() { return priv; }, ui, ACT, legalNow, onStation, pickDest, myMovable };
+if (LOCAL || params.get('p')) window.__mrx = { get room() { return room; }, get priv() { return priv; }, ui, ACT, legalNow, onStation, pickDest, myMovable };
 }
 </script>
 </body>
