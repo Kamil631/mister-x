@@ -9,4 +9,4 @@ Browser-Spiel für 3–8 Spieler: Jeder spielt am eigenen Handy, PC oder iPad. E
 - Spielstände liegen in der Supabase-Tabelle `mrx_rooms` (Projekt „K&M Projekt“).
 - Testmodus ohne Server (mehrere Tabs im selben Browser): `index.html?local&p=1`, `?local&p=2`, …
 
-Eigene London-Karte (186 Stationen), keine Kopie des Original-Spielbretts.
+Eigene London-Karte (186 Stationen, mit Straßen, Parks, Bezirken und Wahrzeichen), keine Kopie des Original-Spielbretts. Hell- und Dunkelmodus (folgt dem System oder per Schalter).
